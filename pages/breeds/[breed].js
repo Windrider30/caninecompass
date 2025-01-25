@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Layout from '../../components/Layout';
 import styles from '../../styles/BreedDetail.module.css';
 import { useRouter } from 'next/router';
-import { fetchBreedInfo } from '../../utils/breedData';
+import { fetchBreedInfo, searchBreeds } from '../../utils/breedData'; // Import searchBreeds
 
 export default function BreedDetailPage({ breedData: initialBreedData }) {
   const router = useRouter();
@@ -150,7 +150,7 @@ export default function BreedDetailPage({ breedData: initialBreedData }) {
 
 // Fetch all breed paths at build time
 export async function getStaticPaths() {
-  const breeds = await searchBreeds('');
+  const breeds = await searchBreeds(''); // Use searchBreeds to fetch all breeds
 
   const paths = breeds.map((breed) => ({
     params: { breed: breed.name.toLowerCase().replace(/ /g, '-') },
@@ -158,7 +158,7 @@ export async function getStaticPaths() {
 
   return {
     paths,
-    fallback: 'blocking',
+    fallback: 'blocking', // Generate pages on-demand if not pre-rendered
   };
 }
 
@@ -169,7 +169,7 @@ export async function getStaticProps({ params }) {
 
   if (!breedData) {
     return {
-      notFound: true,
+      notFound: true, // Return 404 if breed is not found
     };
   }
 
