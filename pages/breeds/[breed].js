@@ -2,39 +2,72 @@ import { useEffect, useState } from 'react';
 import Layout from '../../components/Layout';
 import styles from '../../styles/BreedDetail.module.css';
 import { useRouter } from 'next/router';
-import { fetchBreedInfo } from '../../utils/breedData';
+import { fetchBreedInfo, searchBreeds } from '../../utils/breedData';
 
-export default function BreedDetailPage() {
+// Fetch all breed paths at build time
+export async function getStaticPaths() {
+  // Fetch all breeds from the Dog API
+  const breeds = await searchBreeds('');
+
+  // Generate paths for each breed
+  const paths = breeds.map((breed) => ({
+    params: { breed: breed.name.toLowerCase().replace(/ /g, '-') },
+  }));
+
+  return {
+    paths,
+    fallback: 'blocking', // Generate pages on-demand if not pre-rendered
+  };
+}
+
+// Fetch breed data at build time
+export async function getStaticProps({ params }) {
+  const breedName = params.breed.replace(/-/g, ' ');
+  const breedData = await fetchBreedInfo(breedName);
+
+  if (!breedData) {
+    return {
+      notFound: true, // Return 404 if breed is not found
+    };
+  }
+
+  return {
+    props: {
+      breedData,
+    },
+    revalidate: 60 * 60, // Revalidate data every hour (in seconds)
+  };
+}
+
+export default function BreedDetailPage({ breedData: initialBreedData }) {
   const router = useRouter();
-  const { breed } = router.query;
-  const [breedData, setBreedData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [breedData, setBreedData] = useState(initialBreedData);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (!breed) return;
-      
-      try {
+    if (!initialBreedData && router.isReady) {
+      // Fetch breed data on the client side if not pre-rendered
+      const fetchData = async () => {
         setLoading(true);
-        const data = await fetchBreedInfo(breed);
-        
-        if (!data || (!data.wikipedia.description && !data.dogApi)) {
-          throw new Error('Breed information not found');
+        try {
+          const data = await fetchBreedInfo(router.query.breed);
+          if (!data) {
+            throw new Error('Breed information not found');
+          }
+          setBreedData(data);
+        } catch (err) {
+          setError(err.message);
+        } finally {
+          setLoading(false);
         }
-        
-        setBreedData(data);
-      } catch (err) {
-        setError('Failed to find dog breed information');
-      } finally {
-        setLoading(false);
-      }
-    };
+      };
 
-    fetchData();
-  }, [breed]);
+      fetchData();
+    }
+  }, [router.isReady, router.query.breed, initialBreedData]);
 
-  if (loading) {
+  if (router.isFallback || loading) {
     return (
       <Layout>
         <div className={styles.container}>
