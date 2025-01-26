@@ -2,10 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  serverOptions: {
-    host: '0.0.0.0',
-    port: 3001
-  }
-}
+  // Remove serverOptions as it's not a valid Next.js configuration key
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

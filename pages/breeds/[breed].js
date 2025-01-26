@@ -1,5 +1,5 @@
-import Layout from '../../../components/Layout';
-import styles from '../../../styles/BreedDetail.module.css';
+import Layout from '../../components/Layout';
+import styles from '../../styles/BreedDetail.module.css';
 import { useRouter } from 'next/router';
 
 export default function BreedDetailPage() {
