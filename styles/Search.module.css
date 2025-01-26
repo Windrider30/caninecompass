@@ -32,6 +32,7 @@
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.2s;
+  display: block; /* Ensure button is visible */
 }
 
 .searchButton:hover {
