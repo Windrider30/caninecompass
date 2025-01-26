@@ -1,7 +1,7 @@
 import Layout from '../../components/Layout';
 import styles from '../../styles/Breeds.module.css';
 import Link from 'next/link';
-import { getAllBreeds } from '../../utils/breedData'; // Ensure correct import
+import { getAllBreeds } from '../../utils/breedData';
 
 export default function BreedsPage({ breeds }) {
   return (
@@ -23,6 +23,7 @@ export default function BreedsPage({ breeds }) {
               className={styles.breedCard}
             >
               <h3>{breed.name}</h3>
+              <p>{breed.category}</p>
             </Link>
           ))}
         </div>
@@ -32,7 +33,9 @@ export default function BreedsPage({ breeds }) {
 }
 
 export async function getStaticProps() {
-  const breeds = getAllBreeds(); // Ensure this function is called correctly
+  // Use the getAllBreeds function correctly
+  const breeds = getAllBreeds();
+  
   return {
     props: {
       breeds,

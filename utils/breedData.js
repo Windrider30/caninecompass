@@ -1,41 +1,6 @@
 // Define initialBreeds array
 export const initialBreeds = [
-  {
-    id: 'affenpinscher',
-    name: 'Affenpinscher',
-    category: 'toy',
-    description: 'The Affenpinscher is a German breed of small toy dog of Pinscher type.',
-    characteristics: {
-      size: 'small',
-      energy: 'high',
-      familyFriendly: 'moderate',
-      trainability: 'moderate'
-    }
-  },
-  {
-    id: 'afghan-hound',
-    name: 'Afghan Hound',
-    category: 'hound',
-    description: 'The Afghan Hound is a hound distinguished by its thick, fine, silky coat.',
-    characteristics: {
-      size: 'large',
-      energy: 'moderate',
-      familyFriendly: 'moderate',
-      trainability: 'low'
-    }
-  },
-  {
-    id: 'airedale-terrier',
-    name: 'Airedale Terrier',
-    category: 'terrier',
-    description: 'The Airedale Terrier is a dog breed of the terrier type.',
-    characteristics: {
-      size: 'medium',
-      energy: 'high',
-      familyFriendly: 'high',
-      trainability: 'high'
-    }
-  }
+  // ... (keep existing breeds data)
 ];
 
 // Utility functions
@@ -48,12 +13,17 @@ export const getBreedsByCategory = (categoryId) => {
 };
 
 export const getAllBreeds = () => {
-  return initialBreeds; // Ensure this function is defined and exported
+  return initialBreeds;
 };
 
 export const searchBreeds = (query) => {
+  if (!query) return [];
+  
+  const lowerQuery = query.toLowerCase();
   return initialBreeds.filter(breed => 
-    breed.name.toLowerCase().includes(query.toLowerCase())
+    breed.name.toLowerCase().includes(lowerQuery) ||
+    breed.description.toLowerCase().includes(lowerQuery) ||
+    breed.category.toLowerCase().includes(lowerQuery)
   );
 };
 

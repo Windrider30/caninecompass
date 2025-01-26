@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import Layout from '../../components/Layout';
 import styles from '../../styles/BreedDetail.module.css';
 import { useRouter } from 'next/router';
@@ -5,34 +7,71 @@ import { useRouter } from 'next/router';
 export default function BreedDetailPage() {
   const router = useRouter();
   const { breed } = router.query;
+  const [breedData, setBreedData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Handle case where breed is undefined (during prerendering)
-  if (!breed) {
-    return <Layout>Loading...</Layout>;
-  }
+  useEffect(() => {
+    if (!breed) return;
 
-  // Use a local fallback image
-  const fallbackImage = '/images/fallback.jpg';
+    const fetchBreedData = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
 
-  // Placeholder data - will be replaced with API data
-  const breedData = {
-    id: breed,
-    name: breed.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-    description: `The ${breed.replace(/-/g, ' ')} is a wonderful breed known for...`,
-    characteristics: {
-      size: 'Medium',
-      lifespan: '10-12 years',
-      temperament: ['Friendly', 'Energetic', 'Intelligent'],
-      goodWith: ['Children', 'Other Dogs'],
-      exerciseNeeds: 'High',
-      groomingNeeds: 'Moderate'
-    },
-    images: [
-      fallbackImage,
-      fallbackImage,
-      fallbackImage
-    ]
-  };
+        // Fetch from Dog API
+        const dogApiResponse = await axios.get(
+          `${process.env.NEXT_PUBLIC_DOG_API_URL}/breeds/${breed}`,
+          {
+            headers: {
+              'x-api-key': process.env.NEXT_PUBLIC_DOG_API_KEY
+            }
+          }
+        );
+
+        // Fetch Wikipedia summary
+        const wikipediaResponse = await axios.get(
+          `https://en.wikipedia.org/api/rest_v1/page/summary/${dogApiResponse.data.name}`
+        );
+
+        // Fetch images from Pixabay
+        const pixabayResponse = await axios.get(
+          `https://pixabay.com/api/?key=${process.env.NEXT_PUBLIC_PIXABAY_API_KEY}&q=${encodeURIComponent(dogApiResponse.data.name + ' dog')}&image_type=photo&per_page=5`
+        );
+
+        // Combine data
+        const combinedData = {
+          id: dogApiResponse.data.id,
+          name: dogApiResponse.data.name,
+          description: wikipediaResponse.data.extract,
+          images: pixabayResponse.data.hits.length > 0 ?
+            pixabayResponse.data.hits.map(hit => hit.webformatURL) :
+            ['/images/fallback.jpg'],
+          characteristics: {
+            size: dogApiResponse.data.height?.metric || 'Unknown',
+            lifespan: dogApiResponse.data.life_span || 'Unknown',
+            temperament: dogApiResponse.data.temperament?.split(', ') || [],
+            goodWith: dogApiResponse.data.bred_for?.split(', ') || [],
+            exerciseNeeds: dogApiResponse.data.energy_level || 'Unknown',
+            groomingNeeds: dogApiResponse.data.grooming || 'Unknown'
+          }
+        };
+
+        setBreedData(combinedData);
+      } catch (error) {
+        console.error('Error fetching breed data:', error);
+        setError('Failed to fetch breed details. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchBreedData();
+  }, [breed]);
+
+  if (isLoading) return <Layout>Loading...</Layout>;
+  if (error) return <Layout>{error}</Layout>;
+  if (!breedData) return <Layout>Breed not found</Layout>;
 
   return (
     <Layout>
