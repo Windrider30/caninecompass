@@ -2,21 +2,10 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  images: {
-    domains: ['cdn2.thedogapi.com', 'pixabay.com'],
-  },
-  async rewrites() {
-    return [
-      {
-        source: '/api/proxy/:path*',
-        destination: 'https://pixabay.com/:path*',
-      },
-      {
-        source: '/api/dogapi/:path*',
-        destination: 'https://api.thedogapi.com/v1/:path*',
-      },
-    ];
-  },
-};
+  serverOptions: {
+    host: '0.0.0.0',
+    port: 3001
+  }
+}
 
-module.exports = nextConfig;
+module.exports = nextConfig

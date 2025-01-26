@@ -1,26 +1,96 @@
-// Ensure searchBreeds is exported at the bottom of the file
-export const searchBreeds = async (query) => {
-  try {
-    const response = await axios.get(
-      `/api/dogapi/breeds/search?q=${encodeURIComponent(query)}`,
-      {
-        headers: {
-          'x-api-key': process.env.NEXT_PUBLIC_DOG_API_KEY
-        },
-        validateStatus: (status) => status < 500
-      }
-    );
-
-    if (!response.data || response.data.length === 0) {
-      return [];
-    }
-
-    return response.data;
-  } catch (error) {
-    handleApiError(error);
-    return [];
+// Breed categories data
+export const breedCategories = [
+  {
+    id: 'working',
+    name: 'Working Dogs',
+    description: 'Dogs bred for specific tasks like guarding, pulling sleds, or water rescue.'
+  },
+  {
+    id: 'herding',
+    name: 'Herding Dogs',
+    description: 'Dogs bred to herd livestock, known for their intelligence and energy.'
+  },
+  {
+    id: 'hound',
+    name: 'Hound Dogs',
+    description: 'Dogs bred for hunting, known for their keen sense of smell or sight.'
+  },
+  {
+    id: 'terrier',
+    name: 'Terrier Dogs',
+    description: 'Small, energetic dogs originally bred for hunting vermin.'
+  },
+  {
+    id: 'toy',
+    name: 'Toy Dogs',
+    description: 'Small companion dogs bred primarily for their size and appearance.'
+  },
+  {
+    id: 'non-sporting',
+    name: 'Non-Sporting Dogs',
+    description: 'Diverse group of companion dogs that don\'t fit into other categories.'
   }
+];
+
+// Initial breeds data
+export const initialBreeds = [
+  {
+    id: 'affenpinscher',
+    name: 'Affenpinscher',
+    category: 'toy',
+    description: 'The Affenpinscher is a German breed of small toy dog of Pinscher type.',
+    characteristics: {
+      size: 'small',
+      energy: 'high',
+      familyFriendly: 'moderate',
+      trainability: 'moderate'
+    }
+  },
+  {
+    id: 'afghan-hound',
+    name: 'Afghan Hound',
+    category: 'hound',
+    description: 'The Afghan Hound is a hound distinguished by its thick, fine, silky coat.',
+    characteristics: {
+      size: 'large',
+      energy: 'moderate',
+      familyFriendly: 'moderate',
+      trainability: 'low'
+    }
+  },
+  {
+    id: 'airedale-terrier',
+    name: 'Airedale Terrier',
+    category: 'terrier',
+    description: 'The Airedale Terrier is a dog breed of the terrier type.',
+    characteristics: {
+      size: 'medium',
+      energy: 'high',
+      familyFriendly: 'high',
+      trainability: 'high'
+    }
+  }
+];
+
+// Utility functions
+export const getBreedById = (id) => {
+  return initialBreeds.find(breed => breed.id === id);
 };
 
-// Ensure all exports are listed at the bottom
-export { fetchBreedInfo, searchBreeds };
+export const getBreedsByCategory = (categoryId) => {
+  return initialBreeds.filter(breed => breed.category === categoryId);
+};
+
+export const getAllBreeds = () => {
+  return initialBreeds;
+};
+
+export const searchBreeds = (query) => {
+  return initialBreeds.filter(breed => 
+    breed.name.toLowerCase().includes(query.toLowerCase())
+  );
+};
+
+export const fetchBreedInfo = async (id) => {
+  return getBreedById(id);
+};
