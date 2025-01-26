@@ -11,6 +11,7 @@ export default function Search() {
 
   const handleSearch = async (e) => {
     e.preventDefault();
+    console.log('Search initiated for:', query); // Debugging
     if (!query.trim()) {
       setResults([]);
       return;
@@ -30,34 +31,27 @@ export default function Search() {
         }
       );
 
-      // Fetch Wikipedia summary
-      const wikipediaResponse = await axios.get(
-        `https://en.wikipedia.org/api/rest_v1/page/summary/${query}`
-      );
+      console.log('Dog API response:', dogApiResponse.data); // Debugging
 
       // Fetch images from Pixabay
       const pixabayResponse = await axios.get(
         `https://pixabay.com/api/?key=${process.env.NEXT_PUBLIC_PIXABAY_API_KEY}&q=${encodeURIComponent(query + ' dog')}&image_type=photo`
       );
 
-      // Combine results
-      const combinedResults = await Promise.all(dogApiResponse.data.map(async breed => {
-        // Get best matching image from Pixabay
-        const breedImage = pixabayResponse.data.hits[0]?.webformatURL || '/images/fallback.jpg';
+      console.log('Pixabay response:', pixabayResponse.data); // Debugging
 
-        return {
-          id: breed.id,
-          name: breed.name,
-          description: wikipediaResponse.data.extract || 'No description available',
-          category: breed.breed_group || 'Unknown',
-          image: breedImage,
-          characteristics: {
-            size: breed.height?.metric || 'Unknown',
-            energy: breed.energy_level || 'Unknown',
-            familyFriendly: breed.bred_for || 'Unknown',
-            trainability: breed.temperament || 'Unknown'
-          }
-        };
+      // Combine results
+      const combinedResults = dogApiResponse.data.map(breed => ({
+        id: breed.id,
+        name: breed.name,
+        image: pixabayResponse.data.hits[0]?.webformatURL || '/images/fallback.jpg',
+        category: breed.breed_group || 'Unknown',
+        characteristics: {
+          size: breed.height?.metric || 'Unknown',
+          energy: breed.energy_level || 'Unknown',
+          familyFriendly: breed.bred_for || 'Unknown',
+          trainability: breed.temperament || 'Unknown'
+        }
       }));
 
       setResults(combinedResults);
@@ -105,7 +99,6 @@ export default function Search() {
               />
               <h3>{breed.name}</h3>
               <p className={styles.category}>Category: {breed.category}</p>
-              <p>{breed.description}</p>
               <div className={styles.characteristics}>
                 <span>Size: {breed.characteristics.size}</span>
                 <span>Energy: {breed.characteristics.energy}</span>
