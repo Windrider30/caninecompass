@@ -1,35 +1,26 @@
-// Add logging to debug image URLs
-const fetchDogImages = async (breedId) => {
+// Ensure searchBreeds is exported at the bottom of the file
+export const searchBreeds = async (query) => {
   try {
     const response = await axios.get(
-      `/api/dogapi/images/search?limit=10&breed_ids=${breedId}`,
+      `/api/dogapi/breeds/search?q=${encodeURIComponent(query)}`,
       {
         headers: {
           'x-api-key': process.env.NEXT_PUBLIC_DOG_API_KEY
-        }
+        },
+        validateStatus: (status) => status < 500
       }
     );
 
-    console.log('Dog API Images:', response.data); // Log Dog API response
+    if (!response.data || response.data.length === 0) {
+      return [];
+    }
 
-    return response.data.map(img => img.url);
+    return response.data;
   } catch (error) {
     handleApiError(error);
     return [];
   }
 };
 
-const fetchPixabayImages = async (breedName) => {
-  try {
-    const response = await axios.get(
-      `/api/proxy/api/?key=${process.env.NEXT_PUBLIC_PIXABAY_API_KEY}&q=${encodeURIComponent(breedName + ' dog')}&image_type=photo&per_page=10`
-    );
-
-    console.log('Pixabay Images:', response.data.hits); // Log Pixabay response
-
-    return response.data.hits.map(img => img.webformatURL);
-  } catch (error) {
-    handleApiError(error);
-    return [];
-  }
-};
+// Ensure all exports are listed at the bottom
+export { fetchBreedInfo, searchBreeds };
