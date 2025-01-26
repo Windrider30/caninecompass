@@ -6,6 +6,11 @@ export default function BreedDetailPage() {
   const router = useRouter();
   const { breed } = router.query;
 
+  // Handle case where breed is undefined (during prerendering)
+  if (!breed) {
+    return <Layout>Loading...</Layout>;
+  }
+
   // Placeholder data - will be replaced with API data
   const breedData = {
     id: breed,
@@ -20,9 +25,9 @@ export default function BreedDetailPage() {
       groomingNeeds: 'Moderate'
     },
     images: [
-      '/images/placeholder.jpg',
-      '/images/placeholder.jpg',
-      '/images/placeholder.jpg'
+      'https://via.placeholder.com/400', // Fallback image URL
+      'https://via.placeholder.com/400',
+      'https://via.placeholder.com/400'
     ]
   };
 

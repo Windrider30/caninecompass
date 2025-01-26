@@ -91,6 +91,11 @@ export const searchBreeds = (query) => {
   );
 };
 
-export const fetchBreedInfo = async (id) => {
+// API-related functions
+export const fetchBreedDetails = async (id) => {
   return getBreedById(id);
+};
+
+export const fetchAllBreeds = async () => {
+  return initialBreeds;
 };
