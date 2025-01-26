@@ -1,24 +1,9 @@
 import Layout from '../../components/Layout';
 import styles from '../../styles/Breeds.module.css';
 import Link from 'next/link';
+import { getAllBreeds } from '../../utils/breedData'; // Ensure correct import
 
-export default function BreedsPage() {
-  // Placeholder data - will be replaced with API data
-  const breeds = [
-    { id: 'affenpinscher', name: 'Affenpinscher' },
-    { id: 'afghan-hound', name: 'Afghan Hound' },
-    { id: 'africanis', name: 'Africanis' },
-    { id: 'aidi', name: 'Aidi' },
-    { id: 'airedale-terrier', name: 'Airedale Terrier' },
-    { id: 'akbash', name: 'Akbash' },
-    { id: 'akita', name: 'Akita' },
-    { id: 'alaskan-malamute', name: 'Alaskan Malamute' },
-    { id: 'american-bulldog', name: 'American Bulldog' },
-    { id: 'american-pit-bull-terrier', name: 'American Pit Bull Terrier' },
-    { id: 'australian-cattle-dog', name: 'Australian Cattle Dog' },
-    { id: 'basenji', name: 'Basenji' }
-  ];
-
+export default function BreedsPage({ breeds }) {
   return (
     <Layout>
       <div className={styles.container}>
@@ -44,4 +29,13 @@ export default function BreedsPage() {
       </div>
     </Layout>
   );
+}
+
+export async function getStaticProps() {
+  const breeds = getAllBreeds(); // Ensure this function is called correctly
+  return {
+    props: {
+      breeds,
+    },
+  };
 }

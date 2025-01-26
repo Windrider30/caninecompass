@@ -8,7 +8,7 @@ export default function Search() {
   const [error, setError] = useState(null);
 
   const handleSearch = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent default form submission
     if (!query) {
       setResults([]);
       return;

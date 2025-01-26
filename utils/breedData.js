@@ -1,31 +1,67 @@
-// Fallback search function using local data
-export const searchBreeds = async (query) => {
-  try {
-    // Try fetching from the API first
-    const apiUrl = `${process.env.NEXT_PUBLIC_DOG_API_URL}/breeds/search?q=${encodeURIComponent(query)}`;
-    console.log('Making request to:', apiUrl);
-
-    const response = await fetch(apiUrl, {
-      headers: {
-        'x-api-key': process.env.NEXT_PUBLIC_DOG_API_KEY,
-      },
-    });
-
-    console.log('Response status:', response.status);
-
-    if (!response.ok) {
-      throw new Error(`API request failed with status ${response.status}`);
+// Define initialBreeds array
+export const initialBreeds = [
+  {
+    id: 'affenpinscher',
+    name: 'Affenpinscher',
+    category: 'toy',
+    description: 'The Affenpinscher is a German breed of small toy dog of Pinscher type.',
+    characteristics: {
+      size: 'small',
+      energy: 'high',
+      familyFriendly: 'moderate',
+      trainability: 'moderate'
     }
-
-    const data = await response.json();
-    console.log('API response:', data);
-    return data;
-  } catch (error) {
-    console.error('API search failed, using local data:', error);
-
-    // Fallback to local data if API fails
-    return initialBreeds.filter((breed) =>
-      breed.name.toLowerCase().includes(query.toLowerCase())
-    );
+  },
+  {
+    id: 'afghan-hound',
+    name: 'Afghan Hound',
+    category: 'hound',
+    description: 'The Afghan Hound is a hound distinguished by its thick, fine, silky coat.',
+    characteristics: {
+      size: 'large',
+      energy: 'moderate',
+      familyFriendly: 'moderate',
+      trainability: 'low'
+    }
+  },
+  {
+    id: 'airedale-terrier',
+    name: 'Airedale Terrier',
+    category: 'terrier',
+    description: 'The Airedale Terrier is a dog breed of the terrier type.',
+    characteristics: {
+      size: 'medium',
+      energy: 'high',
+      familyFriendly: 'high',
+      trainability: 'high'
+    }
   }
+];
+
+// Utility functions
+export const getBreedById = (id) => {
+  return initialBreeds.find(breed => breed.id === id);
+};
+
+export const getBreedsByCategory = (categoryId) => {
+  return initialBreeds.filter(breed => breed.category === categoryId);
+};
+
+export const getAllBreeds = () => {
+  return initialBreeds; // Ensure this function is defined and exported
+};
+
+export const searchBreeds = (query) => {
+  return initialBreeds.filter(breed => 
+    breed.name.toLowerCase().includes(query.toLowerCase())
+  );
+};
+
+// API-related functions
+export const fetchBreedDetails = async (id) => {
+  return getBreedById(id);
+};
+
+export const fetchAllBreeds = async () => {
+  return initialBreeds;
 };

@@ -11,6 +11,9 @@ export default function BreedDetailPage() {
     return <Layout>Loading...</Layout>;
   }
 
+  // Use a local fallback image
+  const fallbackImage = '/images/fallback.jpg';
+
   // Placeholder data - will be replaced with API data
   const breedData = {
     id: breed,
@@ -25,9 +28,9 @@ export default function BreedDetailPage() {
       groomingNeeds: 'Moderate'
     },
     images: [
-      'https://via.placeholder.com/400', // Fallback image URL
-      'https://via.placeholder.com/400',
-      'https://via.placeholder.com/400'
+      fallbackImage,
+      fallbackImage,
+      fallbackImage
     ]
   };
 
